@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_HUB_USER = '12211415'
-        REPO_NAME = 'Milk_Quality_Prediction'
+        REPO_NAME = 'milk_quality_prediction'
         DOCKER_IMAGE = "${DOCKER_HUB_USER}/${REPO_NAME}"
         DOCKER_TAG = 'latest'
     }
