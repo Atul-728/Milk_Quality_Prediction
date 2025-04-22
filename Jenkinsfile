@@ -8,23 +8,30 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            steps { git branch: 'main', url: 'https://github.com/Atul-728/Milk_Quality_Prediction.git' }
+            steps { 
+                git branch: 'main', 
+                url: 'https://github.com/Atul-728/Milk_Quality_Prediction.git' 
+            }
         }
+        
         stage('Build Image') {
-            steps { script { docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}") } }
+            steps { 
+                script { 
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}") 
+                } 
+            }
         }
-       stage('Run Tests') {
+        
+        stage('Run Tests') {
             steps {
                 script {
-                    try {
-                        bat 'python -m pytest tests\\'
-                    } catch (Exception e) {
-                        echo "Tests failed: ${e}"
-                        bat 'where python'  // Debug Python location
+                    docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").inside {
+                        sh 'python -m pytest /app/tests/'
                     }
                 }
             }
         }
+        
         stage('Push to Docker Hub') {
             steps {
                 script {
