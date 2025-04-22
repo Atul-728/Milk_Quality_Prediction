@@ -2,43 +2,44 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'milk_quality_predictor'
-        DOCKER_HUB_REPO = '12211415/milk_quality_predictor'
-        DOCKER_TAG = "${BUILD_NUMBER}"  // Using build number for unique tagging
+        // Set the GitHub repository URL
+        GIT_URL = 'https://github.com/Atul-728/Milk_Quality_Prediction.git'
+        DOCKER_IMAGE = 'milk-quality-app:latest'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the repository
-                checkout scm
+                // Checkout the Git repository
+                git url: "${GIT_URL}"
             }
         }
 
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image with the build number as a tag
-                    docker.build("${DOCKER_HUB_REPO}:${DOCKER_TAG}")
+                    // Build the Docker image from the Dockerfile
+                    docker.build(DOCKER_IMAGE)
                 }
             }
         }
 
         stage('Run Tests') {
             steps {
-                // Run unit tests to ensure the project is working correctly
-                sh 'python -m unittest discover tests'
+                script {
+                    // Run tests inside the Docker container (ensure you have pytest in your requirements)
+                    docker.image(DOCKER_IMAGE).inside {
+                        sh 'pytest tests/'  // Adjust the path to your test folder if needed
+                    }
+                }
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Deploy') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: 'https://index.docker.io/v1/']) {
-                    script {
-                        // Push the image with the tag (e.g., build number or latest)
-                        docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push()
-                        docker.image("${DOCKER_HUB_REPO}:${DOCKER_TAG}").push('latest')  // Optionally, push latest as well
-                    }
+                script {
+                    // Run the container with the app (expose to port 5000)
+                    docker.image(DOCKER_IMAGE).run('-p 5000:5000')
                 }
             }
         }
@@ -46,10 +47,8 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finished.'
-        }
-        failure {
-            echo 'Pipeline failed.'
+            // Clean up the Docker image after the build
+            sh 'docker system prune -f'
         }
     }
 }
