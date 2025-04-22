@@ -2,37 +2,38 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = '12211415/milk_quality_prediction:latest'
+        IMAGE_NAME = 'milk_quality_predictor'
+        DOCKER_HUB_REPO = '12211415/milk_quality_predictor'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-credentials', url: 'https://github.com/Atul-728/Milk_Quality_Prediction.git'
+                // This will use whatever branch Jenkins already checked out
+                checkout scm
             }
         }
 
         stage('Build Image') {
             steps {
-                bat "docker build -t ${env.DOCKER_IMAGE} ."
+                script {
+                    docker.build("${IMAGE_NAME}")
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    docker.image(env.DOCKER_IMAGE).inside {
-                        bat 'pytest > result.txt || type result.txt'  // Run pytest, show result even on fail
-                    }
-                }
+                sh 'python -m unittest discover tests'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-                    bat "docker push ${env.DOCKER_IMAGE}"
+                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
+                    script {
+                        docker.image("${IMAGE_NAME}").push('latest')
+                    }
                 }
             }
         }
