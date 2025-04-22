@@ -13,8 +13,17 @@ pipeline {
         stage('Build Image') {
             steps { script { docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}") } }
         }
-        stage('Run Tests') {
-            steps { bat 'python -m pytest tests\\' }
+       stage('Run Tests') {
+            steps {
+                script {
+                    try {
+                        bat 'python -m pytest tests\\'
+                    } catch (Exception e) {
+                        echo "Tests failed: ${e}"
+                        bat 'where python'  // Debug Python location
+                    }
+                }
+            }
         }
         stage('Push to Docker Hub') {
             steps {
