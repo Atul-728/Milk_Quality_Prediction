@@ -1,18 +1,14 @@
 FROM python:3.10-slim
 
-# Set working directory
-WORKDIR /app
+# Set working directory  
+WORKDIR /app  
 
-# Copy requirements first (for layer caching)
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy requirements first (better caching)  
+COPY requirements.txt .  
+RUN pip install --no-cache-dir -r requirements.txt pytest  
 
-# Copy tests and install pytest
-COPY tests /app/tests/
-RUN pip install pytest  # Explicitly install pytest
+# Copy the rest of the app  
+COPY . .  
 
-# Copy the rest of the application
-COPY . .
-
-# Command to run the application
-CMD ["python", "app.py"]
+# Run the app  
+CMD ["python", "app.py"]  
