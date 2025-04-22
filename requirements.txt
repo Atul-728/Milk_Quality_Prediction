@@ -1,7 +1,8 @@
 jupyter
-seaborn
 numpy
 pandas
+seaborn
 matplotlib
 scikit-learn
-flask
+nbconvert
+ipykernel
