@@ -5,12 +5,12 @@ FROM python:3.10-slim
 # Set working directory
 WORKDIR /app
 
-# Copy files to container
+# Copy all files to container
 COPY . /app
 
-# Install dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir nbconvert ipykernel
 
-# Automatically execute the notebook when container runs
+# Run the Jupyter notebook on container start
 CMD ["jupyter", "nbconvert", "--to", "notebook", "--execute", "--inplace", "Milk_Quality_Prediction.ipynb"]
