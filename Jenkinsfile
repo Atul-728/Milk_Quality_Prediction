@@ -7,8 +7,8 @@ pipeline {
 
     stages {
         stage('Clone Repository') {
-            steps {
-                git 'https://github.com/Atul-728/Milk_Quality_Prediction.git'
+             steps {
+                git branch: 'main', url: 'https://github.com/Atul-728/Milk_Quality_Prediction.git'
             }
         }
 
