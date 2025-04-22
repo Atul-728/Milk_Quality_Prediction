@@ -1,12 +1,10 @@
 version: '3.8'
 
 services:
-  milk-quality-app:
+  milk-quality:
     build: .
-    container_name: milk-app
-    ports:
-      - "5000:5000"
-    restart: always
-    environment:
-      - FLASK_ENV=production
-    command: python app.py
+    container_name: milk_quality_container
+    volumes:
+      - .:/app
+    command: >
+      jupyter nbconvert --to notebook --execute --inplace Milk_Quality_Prediction.ipynb
