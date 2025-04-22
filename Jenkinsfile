@@ -14,7 +14,7 @@ pipeline {
             steps { script { docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}") } }
         }
         stage('Run Tests') {
-            steps { sh 'python -m pytest tests/' }
+            steps { bat 'python -m pytest tests\\' }
         }
         stage('Push to Docker Hub') {
             steps {
