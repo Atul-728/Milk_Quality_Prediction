@@ -20,7 +20,7 @@ pipeline {
 
         stage('Run Script in Container') {
             steps {
-                sh 'docker run --rm $IMAGE_NAME'
+                bat 'docker run --rm %IMAGE_NAME%'
             }
         }
     }
