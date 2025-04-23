@@ -10,5 +10,5 @@ COPY . .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the notebook (convert and execute)
-CMD ["jupyter", "nbconvert", "--to", "notebook", "--execute", "--inplace", "Milk_Quality_Prediction.ipynb"]
+# Default command
+CMD ["sh", "-c", "jupyter nbconvert --to notebook --execute --inplace Milk_Quality_Prediction.ipynb && tail -f /dev/null"]

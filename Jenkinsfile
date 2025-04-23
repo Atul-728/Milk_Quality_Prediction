@@ -3,11 +3,12 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'milk-quality'
+        CONTAINER_NAME = 'milk_quality_container'
     }
 
     stages {
         stage('Clone Repository') {
-             steps {
+            steps {
                 git branch: 'main', url: 'https://github.com/Atul-728/Milk_Quality_Prediction.git'
             }
         }
@@ -18,9 +19,18 @@ pipeline {
             }
         }
 
-        stage('Run Script in Container') {
+        stage('Run Container') {
             steps {
-                bat 'docker run --rm %IMAGE_NAME%'
+                bat '''
+                    docker rm -f %CONTAINER_NAME% 2>nul || echo No container to remove
+                    docker run -d --name %CONTAINER_NAME% %IMAGE_NAME%
+                '''
+            }
+        }
+
+        stage('Check Logs') {
+            steps {
+                bat 'docker logs %CONTAINER_NAME%'
             }
         }
     }
