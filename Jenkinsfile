@@ -15,22 +15,22 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat 'docker build -t %%IMAGE_NAME%% .'
             }
         }
 
         stage('Run Container') {
             steps {
                 bat '''
-                    docker rm -f %CONTAINER_NAME% 2>nul || echo No container to remove
-                    docker run -d --name %CONTAINER_NAME% %IMAGE_NAME%
+                    docker rm -f %%CONTAINER_NAME%% 2>nul || echo No container to remove
+                    docker run -d --name %%CONTAINER_NAME%% %%IMAGE_NAME%%
                 '''
             }
         }
 
         stage('Check Logs') {
             steps {
-                bat 'docker logs %CONTAINER_NAME%'
+                bat 'docker logs %%CONTAINER_NAME%%'
             }
         }
     }
